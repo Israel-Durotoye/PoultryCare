@@ -141,7 +141,7 @@ export default function Login() {
               id="login-submit"
               type="submit"
               disabled={loading}
-              className="w-full h-12 bg-gradient-primary text-primary-foreground font-semibold rounded-xl shadow-soft hover:shadow-glow hover:opacity-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-2 cursor-pointer text-sm"
+              className="w-full h-12 bg-green-500 hover:bg-green-600 active:bg-green-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-2 cursor-pointer text-sm tracking-wide"
             >
               {loading
                 ? 'Please wait…'

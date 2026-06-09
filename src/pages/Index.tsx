@@ -2,7 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import {
   Mic, Image as ImageIcon, Stethoscope, Activity,
   History, BarChart2, ShieldCheck, AlertTriangle,
-  CalendarDays, FlaskConical, Square, Download, Loader2
+  CalendarDays, FlaskConical, Square, Download, Loader2,
+  Camera, X as XIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UploadZone } from "@/components/UploadZone";
@@ -114,6 +115,11 @@ const Index = () => {
   const [imageResult, setImageResult] = useState<DiagnosisResult | null>(null);
   const [analyzingImage, setAnalyzingImage] = useState(false);
 
+  /* ── Camera capture ─────────────────────────────────────── */
+  const [cameraOpen, setCameraOpen]         = useState(false);
+  const cameraStreamRef = useRef<MediaStream | null>(null);
+  const videoRef        = useRef<HTMLVideoElement | null>(null);
+
   /* ── UI ─────────────────────────────────────────────────── */
   const [historyOpen, setHistoryOpen] = useState(false);
   const [downloading, setDownloading]  = useState(false);
@@ -121,7 +127,10 @@ const Index = () => {
   /* ── Firestore logs ─────────────────────────────────────── */
   const [logs, setLogs] = useState<LogEntry[]>([]);
 
-  useEffect(() => () => cleanupRecording(), []);
+  useEffect(() => () => {
+    cleanupRecording();
+    cameraStreamRef.current?.getTracks().forEach(t => t.stop());
+  }, []);
 
   useEffect(() => {
     if (!currentUser) return;
@@ -158,6 +167,49 @@ const Index = () => {
     } finally {
       setDownloading(false);
     }
+  };
+
+  /* ── Camera handlers ───────────────────────────────── */
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
+      });
+      cameraStreamRef.current = stream;
+      setCameraOpen(true);
+      // Attach stream to video element after React renders the overlay
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.play();
+        }
+      }, 50);
+    } catch {
+      toast.error('Camera access denied or not available.');
+    }
+  };
+
+  const stopCamera = () => {
+    cameraStreamRef.current?.getTracks().forEach(t => t.stop());
+    cameraStreamRef.current = null;
+    setCameraOpen(false);
+  };
+
+  const capturePhoto = () => {
+    if (!videoRef.current) return;
+    const video  = videoRef.current;
+    const canvas = document.createElement('canvas');
+    canvas.width  = video.videoWidth  || 1280;
+    canvas.height = video.videoHeight || 720;
+    canvas.getContext('2d')!.drawImage(video, 0, 0, canvas.width, canvas.height);
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+      const file = new File([blob], 'camera_capture.jpg', { type: 'image/jpeg' });
+      setImageFile(file);
+      setImageResult(null);
+      stopCamera();
+      toast.success('Photo captured!');
+    }, 'image/jpeg', 0.92);
   };
 
   /* ── Recording helpers ─────────────────────────────────── */
@@ -281,6 +333,49 @@ const Index = () => {
   return (
     <div className="h-screen bg-background flex flex-col overflow-hidden">
       <Toaster position="top-center" richColors />
+
+      {/* ══ Camera viewfinder overlay ════════════════════════ */}
+      {cameraOpen && (
+        <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center">
+          {/* Close */}
+          <button
+            onClick={stopCamera}
+            className="absolute top-4 right-4 h-10 w-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all cursor-pointer"
+          >
+            <XIcon className="h-5 w-5" />
+          </button>
+
+          {/* Label */}
+          <p className="absolute top-4 left-1/2 -translate-x-1/2 text-white/80 text-sm font-medium tracking-wide">
+            Point at the stool sample
+          </p>
+
+          {/* Live feed */}
+          <video
+            ref={videoRef}
+            autoPlay
+            playsInline
+            muted
+            className="w-full max-w-2xl rounded-2xl object-cover shadow-2xl"
+          />
+
+          {/* Guide frame overlay */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="w-64 h-64 border-2 border-white/40 rounded-2xl" />
+          </div>
+
+          {/* Capture button */}
+          <button
+            id="capture-photo-btn"
+            onClick={capturePhoto}
+            className="mt-6 h-16 w-16 rounded-full bg-white border-4 border-white/40 shadow-2xl hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center justify-center"
+          >
+            <div className="h-12 w-12 rounded-full bg-destructive" />
+          </button>
+          <p className="mt-3 text-white/60 text-xs">Tap to capture</p>
+        </div>
+      )}
+
 
       {/* ══ Header ══════════════════════════════════════════ */}
       <header className="shrink-0 border-b border-border/60 bg-card/80 backdrop-blur-xl z-30 px-6 py-3 flex items-center gap-3">
@@ -489,6 +584,20 @@ const Index = () => {
                     onFileChange={(f) => { setImageFile(f); setImageResult(null); }}
                     preview="image"
                   />
+
+                  {/* Take a photo row */}
+                  <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-muted/40 border border-border/60">
+                    <span className="text-xs text-muted-foreground flex-1">Or take a photo</span>
+                    <button
+                      id="open-camera-btn"
+                      onClick={startCamera}
+                      disabled={analyzingImage}
+                      title="Open camera"
+                      className="h-9 w-9 rounded-full bg-destructive/10 hover:bg-destructive/20 text-destructive border border-destructive/20 hover:border-destructive/40 flex items-center justify-center transition-all cursor-pointer disabled:opacity-40"
+                    >
+                      <Camera className="h-4 w-4" />
+                    </button>
+                  </div>
 
                   {/* Analyze button */}
                   <Button
