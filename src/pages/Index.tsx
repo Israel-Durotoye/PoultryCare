@@ -67,13 +67,13 @@ function StatCard({ icon: Icon, label, value, sub, variant }: StatCardProps) {
   const colors = {
     primary: "bg-primary/8 text-primary border-primary/15",
     success: "bg-success/8 text-success border-success/15",
-    danger:  "bg-destructive/8 text-destructive border-destructive/15",
+    danger: "bg-destructive/8 text-destructive border-destructive/15",
     neutral: "bg-muted text-muted-foreground border-border",
   };
   const iconBg = {
     primary: "bg-primary/12 text-primary",
     success: "bg-success/12 text-success",
-    danger:  "bg-destructive/12 text-destructive",
+    danger: "bg-destructive/12 text-destructive",
     neutral: "bg-muted-foreground/10 text-muted-foreground",
   };
   return (
@@ -95,34 +95,34 @@ const Index = () => {
   const { currentUser } = useAuth();
 
   /* ── Audio ─────────────────────────────────────────────── */
-  const [audioFile, setAudioFile]     = useState<File | null>(null);
+  const [audioFile, setAudioFile] = useState<File | null>(null);
   const [audioResult, setAudioResult] = useState<DiagnosisResult | null>(null);
   const [analyzingAudio, setAnalyzingAudio] = useState(false);
 
   /* ── Recording ─────────────────────────────────────────── */
-  const [isRecording, setIsRecording]       = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
-  const audioCtxRef    = useRef<AudioContext | null>(null);
-  const processorRef   = useRef<ScriptProcessorNode | null>(null);
-  const srcRef         = useRef<MediaStreamAudioSourceNode | null>(null);
-  const streamRef      = useRef<MediaStream | null>(null);
-  const chunksRef      = useRef<Float32Array[]>([]);
-  const sampleRateRef  = useRef<number>(44100);
-  const timerRef       = useRef<number | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const processorRef = useRef<ScriptProcessorNode | null>(null);
+  const srcRef = useRef<MediaStreamAudioSourceNode | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const chunksRef = useRef<Float32Array[]>([]);
+  const sampleRateRef = useRef<number>(44100);
+  const timerRef = useRef<number | null>(null);
 
   /* ── Image ─────────────────────────────────────────────── */
-  const [imageFile, setImageFile]     = useState<File | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageResult, setImageResult] = useState<DiagnosisResult | null>(null);
   const [analyzingImage, setAnalyzingImage] = useState(false);
 
   /* ── Camera capture ─────────────────────────────────────── */
-  const [cameraOpen, setCameraOpen]         = useState(false);
+  const [cameraOpen, setCameraOpen] = useState(false);
   const cameraStreamRef = useRef<MediaStream | null>(null);
-  const videoRef        = useRef<HTMLVideoElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   /* ── UI ─────────────────────────────────────────────────── */
   const [historyOpen, setHistoryOpen] = useState(false);
-  const [downloading, setDownloading]  = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
   /* ── Firestore logs ─────────────────────────────────────── */
   const [logs, setLogs] = useState<LogEntry[]>([]);
@@ -148,7 +148,7 @@ const Index = () => {
   }, [currentUser]);
 
   /* ── Derived stats ─────────────────────────────────────── */
-  const todayStr   = new Date().toDateString();
+  const todayStr = new Date().toDateString();
   const todayCount = logs.filter((l) => l.timestamp?.toDate?.().toDateString() === todayStr).length;
   const healthyCount = logs.filter((l) => l.status === "healthy").length;
   const flaggedCount = logs.filter((l) => l.status === "unhealthy").length;
@@ -197,9 +197,9 @@ const Index = () => {
 
   const capturePhoto = () => {
     if (!videoRef.current) return;
-    const video  = videoRef.current;
+    const video = videoRef.current;
     const canvas = document.createElement('canvas');
-    canvas.width  = video.videoWidth  || 1280;
+    canvas.width = video.videoWidth || 1280;
     canvas.height = video.videoHeight || 720;
     canvas.getContext('2d')!.drawImage(video, 0, 0, canvas.width, canvas.height);
     canvas.toBlob((blob) => {
@@ -214,7 +214,7 @@ const Index = () => {
 
   /* ── Recording helpers ─────────────────────────────────── */
   const cleanupRecording = () => {
-    if (timerRef.current)    { clearInterval(timerRef.current); timerRef.current = null; }
+    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
     processorRef.current?.disconnect();
     if (processorRef.current) { processorRef.current.onaudioprocess = null; processorRef.current = null; }
     srcRef.current?.disconnect(); srcRef.current = null;
@@ -291,8 +291,8 @@ const Index = () => {
         code === "permission-denied"
           ? "Firestore rules are blocking writes. Go to Firebase Console → Firestore → Rules and allow authenticated users."
           : code === "not-found"
-          ? "Firestore database not found. Go to Firebase Console → Firestore Database → Create Database."
-          : `Firestore error (${code || "unknown"}). Check the browser console for details.`;
+            ? "Firestore database not found. Go to Firebase Console → Firestore Database → Create Database."
+            : `Firestore error (${code || "unknown"}). Check the browser console for details.`;
       toast.error(hint, { id: "firestore-write-err", duration: 10000 });
     }
   };
@@ -405,9 +405,8 @@ const Index = () => {
         <button
           id="toggle-history-btn"
           onClick={() => setHistoryOpen(!historyOpen)}
-          className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-sm font-medium transition-all cursor-pointer ${
-            historyOpen ? "bg-primary/10 border-primary/30 text-primary" : "border-border hover:bg-muted text-muted-foreground hover:text-foreground"
-          }`}
+          className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-sm font-medium transition-all cursor-pointer ${historyOpen ? "bg-primary/10 border-primary/30 text-primary" : "border-border hover:bg-muted text-muted-foreground hover:text-foreground"
+            }`}
         >
           <History className="h-4 w-4" />
           <span className="hidden sm:inline">History</span>
@@ -440,10 +439,10 @@ const Index = () => {
 
             {/* ── Stat cards ─────────────────────────────── */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              <StatCard icon={FlaskConical}    label="Total Analyses" value={logs.length}    sub="All time"        variant="primary" />
-              <StatCard icon={ShieldCheck}     label="Healthy"        value={healthyCount}   sub="Cleared checks"  variant="success" />
-              <StatCard icon={AlertTriangle}   label="Flagged"        value={flaggedCount}   sub="Need attention"  variant="danger"  />
-              <StatCard icon={CalendarDays}    label="Today's Scans"  value={todayCount}     sub="Since midnight"  variant="neutral" />
+              <StatCard icon={FlaskConical} label="Total Analyses" value={logs.length} sub="All time" variant="primary" />
+              <StatCard icon={ShieldCheck} label="Healthy" value={healthyCount} sub="Cleared checks" variant="success" />
+              <StatCard icon={AlertTriangle} label="Flagged" value={flaggedCount} sub="Need attention" variant="danger" />
+              <StatCard icon={CalendarDays} label="Today's Scans" value={todayCount} sub="Since midnight" variant="neutral" />
             </div>
 
             {/* ── Analysis panels ────────────────────────── */}
@@ -461,11 +460,10 @@ const Index = () => {
                     <p className="text-[11px] text-muted-foreground">Upload or record chicken sounds</p>
                   </div>
                   {audioResult && (
-                    <span className={`text-[10px] font-bold px-2 py-1 rounded-full border ${
-                      audioResult.status === "healthy"
+                    <span className={`text-[10px] font-bold px-2 py-1 rounded-full border ${audioResult.status === "healthy"
                         ? "bg-success/10 text-success border-success/20"
                         : "bg-destructive/10 text-destructive border-destructive/20 animate-pulse"
-                    }`}>
+                      }`}>
                       {audioResult.status === "healthy" ? "✓ Healthy" : "⚠ Flagged"}
                     </span>
                   )}
@@ -507,9 +505,8 @@ const Index = () => {
                           {[0.1, 0.3, 0.0, 0.2, 0.4].map((delay, i) => (
                             <div
                               key={i}
-                              className={`w-[3px] bg-destructive rounded-full animate-bounce ${
-                                i === 0 ? "h-2" : i === 1 ? "h-4" : i === 2 ? "h-5" : i === 3 ? "h-3" : "h-4"
-                              }`}
+                              className={`w-[3px] bg-destructive rounded-full animate-bounce ${i === 0 ? "h-2" : i === 1 ? "h-4" : i === 2 ? "h-5" : i === 3 ? "h-3" : "h-4"
+                                }`}
                               style={{ animationDelay: `${delay}s` }}
                             />
                           ))}
@@ -563,11 +560,10 @@ const Index = () => {
                     <p className="text-[11px] text-muted-foreground">Upload a stool sample for visual analysis</p>
                   </div>
                   {imageResult && (
-                    <span className={`text-[10px] font-bold px-2 py-1 rounded-full border ${
-                      imageResult.status === "healthy"
+                    <span className={`text-[10px] font-bold px-2 py-1 rounded-full border ${imageResult.status === "healthy"
                         ? "bg-success/10 text-success border-success/20"
                         : "bg-destructive/10 text-destructive border-destructive/20 animate-pulse"
-                    }`}>
+                      }`}>
                       {imageResult.status === "healthy" ? "✓ Healthy" : "⚠ Flagged"}
                     </span>
                   )}
