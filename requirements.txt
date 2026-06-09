@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+python-multipart
+tf-keras
+tensorflow-cpu
+librosa
+opencv-python-headless
+gdown
+noisereduce
+scikit-learn
