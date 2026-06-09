@@ -28,13 +28,13 @@ export default function Login() {
     } catch (err: unknown) {
       const code = (err as { code?: string })?.code ?? '';
       const msg =
-        code === 'auth/invalid-credential'   ? 'Invalid email or password.' :
-        code === 'auth/user-not-found'        ? 'No account found with this email.' :
-        code === 'auth/wrong-password'        ? 'Incorrect password.' :
-        code === 'auth/email-already-in-use'  ? 'Email already registered. Sign in instead.' :
-        code === 'auth/weak-password'         ? 'Password must be at least 6 characters.' :
-        code === 'auth/invalid-email'         ? 'Please enter a valid email address.' :
-        'Authentication failed. Please try again.';
+        code === 'auth/invalid-credential' ? 'Invalid email or password.' :
+          code === 'auth/user-not-found' ? 'No account found with this email.' :
+            code === 'auth/wrong-password' ? 'Incorrect password.' :
+              code === 'auth/email-already-in-use' ? 'Email already registered. Sign in instead.' :
+                code === 'auth/weak-password' ? 'Password must be at least 6 characters.' :
+                  code === 'auth/invalid-email' ? 'Please enter a valid email address.' :
+                    'Authentication failed. Please try again.';
       toast.error(msg);
     } finally {
       setLoading(false);
@@ -77,11 +77,10 @@ export default function Login() {
               <button
                 key={m}
                 onClick={() => setMode(m)}
-                className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
-                  mode === m
+                className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all cursor-pointer ${mode === m
                     ? 'bg-card shadow-soft text-foreground'
                     : 'text-muted-foreground hover:text-foreground'
-                }`}
+                  }`}
               >
                 {m === 'signin' ? 'Sign In' : 'Create Account'}
               </button>
@@ -146,8 +145,8 @@ export default function Login() {
               {loading
                 ? 'Please wait…'
                 : mode === 'signin'
-                ? '→  Sign In'
-                : '→  Create Account'}
+                  ? '→  Sign In'
+                  : '→  Create Account'}
             </button>
           </form>
 
@@ -170,8 +169,8 @@ export default function Login() {
         </div>
 
         <p className="text-center text-xs text-muted-foreground mt-6 leading-relaxed">
-          For research and demonstration purposes only.
-          <br />Always confirm findings with a licensed veterinarian.
+          © 2026 CluckCare. All rights reserved.
+          <br />Empowering poultry farmers with real-time AI insights.
         </p>
       </div>
     </div>

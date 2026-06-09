@@ -486,7 +486,7 @@ const Index = () => {
 
                   {/* Mic record row */}
                   <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-muted/40 border border-border/60">
-                    <span className="text-xs text-muted-foreground flex-1">Or record live (10s)</span>
+                    <span className="text-xs text-muted-foreground flex-1">Record live (10s)</span>
 
                     {!isRecording ? (
                       /* ── Idle: just the mic icon ── */
@@ -587,7 +587,7 @@ const Index = () => {
 
                   {/* Take a photo row */}
                   <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-muted/40 border border-border/60">
-                    <span className="text-xs text-muted-foreground flex-1">Or take a photo</span>
+                    <span className="text-xs text-muted-foreground flex-1">Take a photo</span>
                     <button
                       id="open-camera-btn"
                       onClick={startCamera}
